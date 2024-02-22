@@ -1,5 +1,14 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    TODO
+    <ul>
+        {% for post in posts %}
+            <li>
+                {{ post.creator }}
+                {{ post.content }}
+                {{ post.timestamp }}
+                {{ post.likes }}
+            </li>
+        {% endfor %}
+    </ul>
 {% endblock %}
