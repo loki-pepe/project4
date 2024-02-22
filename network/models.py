@@ -3,7 +3,7 @@ from django.db import models
 
 
 class User(AbstractUser):
-    pass
+    id = models.BigAutoField(primary_key=True)
 
 class Post(models.Model):
     id = models.BigAutoField(primary_key=True)
