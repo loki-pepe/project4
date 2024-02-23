@@ -57,6 +57,19 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
+def profile(request, username):
+    profile_user = User.objects.get(username=username)
+    follower_count = profile_user.followers.all().count()
+    following_count = profile_user.following.all().count()
+
+    if request.method == "GET":
+        return render(request, "network/profile.html", {
+            "username": username, 
+            "follower_count": follower_count,
+            "following_count": following_count,
+        })
+
+
 def register(request):
     if request.method == "POST":
         username = request.POST["username"]
