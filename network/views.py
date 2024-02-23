@@ -67,11 +67,13 @@ def profile(request, username):
 
         follower_count = profile_user.followers.all().count()
         following_count = profile_user.following.all().count()
+        posts = Post.objects.filter(creator=profile_user)
 
         return render(request, "network/profile.html", {
             "username": username, 
             "follower_count": follower_count,
             "following_count": following_count,
+            "posts": posts,
         })
 
 
