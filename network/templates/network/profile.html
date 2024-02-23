@@ -1,6 +1,11 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
+    {% if user.is_authenticated and user.username != username %}
+    <div>
+        <button>Follow</button>
+    </div>
+    {% endif %}
     <div>
         {{ username }}
     </div>
@@ -9,5 +14,17 @@
     </div>
     <div>
         Following: {{ following_count }}
+    </div>
+    <div>
+        <ul>
+            {% for post in posts %}
+            <li>
+                {{ post.creator }}
+                {{ post.content }}
+                {{ post.timestamp }}
+                {{ post.likes }}
+            </li>
+            {% endfor %}
+        </ul>
     </div>
 {% endblock %}
