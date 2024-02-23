@@ -58,11 +58,16 @@ def logout_view(request):
 
 
 def profile(request, username):
-    profile_user = User.objects.get(username=username)
-    follower_count = profile_user.followers.all().count()
-    following_count = profile_user.following.all().count()
 
     if request.method == "GET":
+        try:
+            profile_user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return HttpResponseRedirect(reverse(index))
+
+        follower_count = profile_user.followers.all().count()
+        following_count = profile_user.following.all().count()
+
         return render(request, "network/profile.html", {
             "username": username, 
             "follower_count": follower_count,
