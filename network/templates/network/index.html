@@ -12,10 +12,12 @@
         {% endfor %}
     </ul>
 
-    <form action="{% url 'create' %}" method="post">
-        {% csrf_token %}
-        <div>New Post</div>
-        <textarea name="text"></textarea>
-        <button type="submit">Post</button>
-    </form>
+    {% if user.is_authenticated %}
+        <form action="{% url 'create' %}" method="post">
+            {% csrf_token %}
+            <div>New Post</div>
+            <textarea name="text"></textarea>
+            <button type="submit">Post</button>
+        </form>
+    {% endif %}
 {% endblock %}
