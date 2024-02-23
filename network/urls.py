@@ -10,5 +10,5 @@ urlpatterns = [
     path("register", views.register, name="register"),
 
     path("create", views.create, name="create"),
-    path("profile/<str:username>", views.profile, name="profile"),
+    path("<str:username>", views.profile, name="profile"),
 ]
