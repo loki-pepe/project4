@@ -1,6 +1,8 @@
+import json
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -12,6 +14,22 @@ def index(request):
     return render(request, "network/index.html", {
         "posts": posts,
     })
+
+
+@login_required
+def create(request):
+
+    # Creating a new post must be via POST
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    if content := request.POST.get("text"):
+        post = Post(
+            creator = request.user, content = content
+        )
+        post.save()
+
+    return HttpResponseRedirect(reverse(index))
 
 
 def login_view(request):
