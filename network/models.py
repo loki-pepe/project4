@@ -4,6 +4,7 @@ from django.db import models
 
 class User(AbstractUser):
     id = models.BigAutoField(primary_key=True)
+    followers = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="following")
 
 class Post(models.Model):
     id = models.BigAutoField(primary_key=True)
