@@ -16,4 +16,4 @@ class Post(models.Model):
         indexes = [
             models.Index(fields=["creator"])
         ]
-        ordering = ["timestamp"]
+        ordering = ["-timestamp"]
