@@ -11,9 +11,7 @@ from .models import User, Post
 
 def index(request):
     posts = Post.objects.all()
-    return render(request, "network/index.html", {
-        "posts": posts,
-    })
+    return render(request, "network/index.html")
 
 
 @login_required
@@ -73,7 +71,6 @@ def profile(request, username):
             "username": username, 
             "follower_count": follower_count,
             "following_count": following_count,
-            "posts": posts,
         })
 
 
