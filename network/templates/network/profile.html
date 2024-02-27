@@ -15,16 +15,6 @@
     <div>
         Following: {{ following_count }}
     </div>
-    <div>
-        <ul>
-            {% for post in posts %}
-            <li>
-                <a href="{% url 'profile' post.creator %}">{{ post.creator }}</a>
-                {{ post.content }}
-                {{ post.timestamp }}
-                {{ post.likes }}
-            </li>
-            {% endfor %}
-        </ul>
+    <div id="posts-div">
     </div>
 {% endblock %}
