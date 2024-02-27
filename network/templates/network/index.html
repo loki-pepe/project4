@@ -1,8 +1,16 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    <div id="posts-div">
-    </div>
+    <ul>
+        {% for post in posts %}
+            <li>
+                <a href="{% url 'profile' post.creator %}">{{ post.creator }}</a>
+                {{ post.content }}
+                {{ post.timestamp }}
+                {{ post.likes }}
+            </li>
+        {% endfor %}
+    </ul>
 
     {% if user.is_authenticated %}
         <form action="{% url 'create' %}" method="post">
