@@ -4,7 +4,7 @@
     <ul>
         {% for post in posts %}
             <li>
-                {{ post.creator }}
+                <a href="{% url 'profile' post.creator %}">{{ post.creator }}</a>
                 {{ post.content }}
                 {{ post.timestamp }}
                 {{ post.likes }}
