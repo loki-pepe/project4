@@ -10,9 +10,8 @@ from .models import User, Post
 
 
 def index(request):
-    posts = Post.objects.all()
     return render(request, "network/index.html", {
-        "posts": posts,
+        "profile": "all",
     })
 
 
@@ -57,6 +56,22 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
+def posts(request, username=""):
+
+    # Filter posts based on username
+    if not username:
+        posts = Post.objects.all()
+    else:
+        try:
+            profile = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return JsonResponse({"error": "Invalid username"}, status=400)
+
+        posts = Post.objects.filter(creator=profile)
+
+    return JsonResponse([post.serialize() for post in posts], safe=False)
+
+
 def profile(request, username):
 
     if request.method == "GET":
@@ -67,13 +82,11 @@ def profile(request, username):
 
         follower_count = profile_user.followers.all().count()
         following_count = profile_user.following.all().count()
-        posts = Post.objects.filter(creator=profile_user)
 
         return render(request, "network/profile.html", {
             "username": username, 
             "follower_count": follower_count,
             "following_count": following_count,
-            "posts": posts,
         })
 
 

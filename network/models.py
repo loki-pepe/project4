@@ -18,3 +18,12 @@ class Post(models.Model):
             models.Index(fields=["creator"])
         ]
         ordering = ["-timestamp"]
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "creator": self.creator.username,
+            "content": self.content,
+            "timestamp": self.timestamp,
+            "likes": self.likes,
+        }

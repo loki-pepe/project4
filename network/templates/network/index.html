@@ -1,8 +1,8 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    <div id="posts-div">
-    </div>
+    <ul id="posts-div">
+    </ul>
 
     {% if user.is_authenticated %}
         <form action="{% url 'create' %}" method="post">
