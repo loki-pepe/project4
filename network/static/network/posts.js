@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-    loadPosts();
+    if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+        loadPosts();
+    }
 })
 
 function addPost(postJson) {
