@@ -3,7 +3,11 @@
 {% block body %}
     {% if user.is_authenticated and user.username != username %}
     <div>
-        <button>Follow</button>
+        {% if follow %}
+        <button id="follow-toggle" followed>Unfollow</button>
+        {% else %}
+        <button id="follow-toggle">Follow</button>
+        {% endif %}
     </div>
     {% endif %}
     <div>

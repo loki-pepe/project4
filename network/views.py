@@ -5,6 +5,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Post
 
@@ -74,20 +75,32 @@ def posts(request, username=""):
 
 def profile(request, username):
 
-    if request.method == "GET":
-        try:
-            profile_user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return HttpResponseRedirect(reverse(index))
+    try:
+        profile_user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return HttpResponseRedirect(reverse(index))
 
+    if request.method == "GET":
         follower_count = profile_user.followers.all().count()
         following_count = profile_user.following.all().count()
+        follow = profile_user.followers.filter(id=request.user.id).exists()
 
         return render(request, "network/profile.html", {
             "username": username, 
             "follower_count": follower_count,
             "following_count": following_count,
+            "follow": follow,
         })
+    
+    elif request.method == "PUT":
+        data = json.loads(request.body)
+        if data["follow"]:
+            profile_user.followers.add(request.user)
+        else:
+            profile_user.followers.remove(request.user)
+
+        return HttpResponse(status=204)
+
 
 
 def register(request):
