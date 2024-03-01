@@ -11,9 +11,7 @@ from .models import User, Post
 
 
 def index(request):
-    return render(request, "network/index.html", {
-        "profile": "all",
-    })
+    return render(request, "network/index.html")
 
 
 @login_required
@@ -62,6 +60,9 @@ def posts(request, username=""):
     # Filter posts based on username
     if not username:
         posts = Post.objects.all()
+    elif username == 'following':
+        following = request.user.following.all()
+        posts = Post.objects.filter(creator__in=following)
     else:
         try:
             profile = User.objects.get(username=username)
@@ -91,7 +92,7 @@ def profile(request, username):
             "following_count": following_count,
             "follow": follow,
         })
-    
+
     elif request.method == "PUT":
         data = json.loads(request.body)
         if data["follow"]:
@@ -102,10 +103,14 @@ def profile(request, username):
         return HttpResponse(status=204)
 
 
-
 def register(request):
     if request.method == "POST":
         username = request.POST["username"]
+        if username.lower() in ["login", "register", "admin", "following"]:
+            return render(request, "network/register.html", {
+                "message": "Invalid username."
+            })
+
         email = request.POST["email"]
 
         # Ensure password matches confirmation
