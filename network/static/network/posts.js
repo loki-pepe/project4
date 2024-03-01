@@ -25,8 +25,8 @@ function followToggle(btn) {
         headers: {
             'X-CSRFToken': csrftoken
         }
-    }).then(response => {  // .then je privremeno, dodat ces API za followere
-        location.reload();
+    }).then(response => {
+        updateFollowers(followed, btn);
     });
 }
 
@@ -74,4 +74,20 @@ function makePost(postJson) {
     post.append(creator, content, likes, timestamp);
 
     return post;
+}
+
+function updateFollowers(followed, btn) {
+    const followers = document.getElementById('follower-count');
+    let followerCount = parseInt(followers.innerHTML);
+
+    if (followed) {
+        btn.innerHTML = 'Follow';
+        btn.removeAttribute('followed');
+        followerCount--;
+    } else {
+        btn.innerHTML = 'Unfollow';
+        btn.setAttribute('followed', "");
+        followerCount++;
+    }
+    followers.innerHTML = followerCount;
 }
