@@ -21,4 +21,12 @@
     </div>
     <ul id="posts-div">
     </ul>
+    {% if user.is_authenticated and user.username == username %}
+    <form action="{% url 'create' %}" method="post">
+        {% csrf_token %}
+        <div>New Post</div>
+        <textarea name="text"></textarea>
+        <button type="submit">Post</button>
+    </form>
+    {% endif %}
 {% endblock %}
