@@ -5,7 +5,6 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 
 from .models import User, Post
 
@@ -27,7 +26,13 @@ def create(request):
         )
         post.save()
 
-    return HttpResponseRedirect(reverse(index))
+    return HttpResponseRedirect(reverse("index"))
+
+
+def following(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("index"))
+    return render(request, "network/index.html")
 
 
 def login_view(request):
@@ -61,6 +66,8 @@ def posts(request, username=""):
     if not username:
         posts = Post.objects.all()
     elif username == 'following':
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Forbidden"}, status=400)
         following = request.user.following.all()
         posts = Post.objects.filter(creator__in=following)
     else:
@@ -79,7 +86,7 @@ def profile(request, username):
     try:
         profile_user = User.objects.get(username=username)
     except User.DoesNotExist:
-        return HttpResponseRedirect(reverse(index))
+        return HttpResponseRedirect(reverse("index"))
 
     if request.method == "GET":
         follower_count = profile_user.followers.all().count()
