@@ -1,15 +1,9 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-    <ul id="posts-div">
-    </ul>
+    {% include "network/posts.html" %}
 
     {% if user.is_authenticated %}
-        <form action="{% url 'create' %}" method="post">
-            {% csrf_token %}
-            <div>New Post</div>
-            <textarea name="text"></textarea>
-            <button type="submit">Post</button>
-        </form>
+        {% include "network/new_post.html" %}
     {% endif %}
 {% endblock %}
