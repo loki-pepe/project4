@@ -1,6 +1,7 @@
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
@@ -78,7 +79,15 @@ def posts(request, username=""):
 
         posts = Post.objects.filter(creator=profile)
 
-    return JsonResponse([post.serialize() for post in posts], safe=False)
+    paginator = Paginator(posts, 10)
+    page_num = request.GET.get("page")
+    page = paginator.get_page(page_num)
+
+    return JsonResponse({
+        "previous_page": page.has_previous(),
+        "next_page": page.has_next(),
+        "posts": [post.serialize() for post in page],
+        }, safe=False)
 
 
 def profile(request, username):

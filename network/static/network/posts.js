@@ -46,13 +46,18 @@ function getCookie(name) {
     return cookieValue;
 }
 
-function loadPosts() {
-    fetch(`/posts${window.location.pathname}`)
+function loadPosts(pageNum=1) {
+    const postsDiv = document.getElementById('posts-div');
+    postsDiv.replaceChildren();
+
+    fetch(`/posts${window.location.pathname}?page=${pageNum}`)
     .then(response => response.json())
-    .then(posts => {
+    .then(page => {
+        const posts = page.posts;
         for (let post of posts) {
-            document.getElementById('posts-div').append(makePost(post));
+            postsDiv.append(makePost(post));
         }
+        paginate(pageNum, page.previous_page, page.next_page);
     });
 }
 
@@ -74,6 +79,25 @@ function makePost(postJson) {
     post.append(creator, content, likes, timestamp);
 
     return post;
+}
+
+function paginate(pageNum, previousPage, nextPage) {
+    const prevBtn = document.getElementById("previous");
+    const nextBtn = document.getElementById("next");
+
+    if (previousPage) {
+        prevBtn.style.opacity = '1';
+        prevBtn.addEventListener('click', () => loadPosts(pageNum-1));
+    } else {
+        prevBtn.style.opacity = '0.5';
+    }
+
+    if (nextPage) {
+        nextBtn.style.opacity = '1';
+        nextBtn.addEventListener('click', () => loadPosts(pageNum+1));
+    } else {
+        nextBtn.style.opacity = '0.5';
+    }
 }
 
 function updateFollowers(followed, btn) {
