@@ -11,6 +11,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 })
 
+function editPost(post) {
+    const editBtn = post.querySelector('.edit-btn');
+    editBtn.style.display = 'none';
+
+    const contentDiv = post.querySelector('.content');
+    const content = contentDiv.innerHTML;
+    const editContent = document.createElement('textarea');
+    editContent.value = content;
+
+    const cancelBtn = document.createElement('button');
+    cancelBtn.setAttribute('class', 'cancel-btn');
+    cancelBtn.innerHTML = 'Cancel';
+    cancelBtn.addEventListener('click', () => {
+        contentDiv.replaceChildren(content);
+        editBtn.style.display = 'inline';
+    });
+
+    const saveBtn = document.createElement('button');
+    saveBtn.setAttribute('class', 'save-btn');
+    saveBtn.innerHTML = 'Save';
+    saveBtn.addEventListener('click', () => {
+        saveEdit(post.id, editContent.value);
+        contentDiv.replaceChildren(editContent.value);
+        editBtn.style.display = 'inline';
+    });
+
+    contentDiv.replaceChildren(editContent, cancelBtn, saveBtn);
+}
+
 function followToggle(btn) {
 
     const csrftoken = getCookie('csrftoken');
@@ -36,7 +65,6 @@ function getCookie(name) {
         const cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++) {
             const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
             if (cookie.substring(0, name.length + 1) === (name + '=')) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                 break;
@@ -63,11 +91,13 @@ function loadPosts(pageNum=1) {
 
 function makePost(postJson) {
     const post = document.createElement('li');
+    post.setAttribute('id', postJson.id)
 
     const creator = document.createElement('div');
     creator.innerHTML = `<a href="${postJson.creator}">${postJson.creator}</a>`;
 
     const content = document.createElement('div');
+    content.setAttribute('class', 'content')
     content.innerHTML = postJson.content;
 
     const likes = document.createElement('div');
@@ -77,6 +107,14 @@ function makePost(postJson) {
     timestamp.innerHTML = postJson.timestamp;
 
     post.append(creator, content, likes, timestamp);
+
+    if (postJson.creator === document.getElementById('username').innerHTML) {
+        const editBtn = document.createElement('button');
+        editBtn.innerHTML = 'Edit';
+        editBtn.setAttribute('class', 'edit-btn')
+        editBtn.addEventListener('click', () => editPost(post));
+        creator.append(editBtn);
+    }
 
     return post;
 }
@@ -106,6 +144,10 @@ function paginate(pageNum, previousPage, nextPage) {
     } else {
         nextBtn.setAttribute('disabled', '');
     }
+}
+
+function saveEdit(id, newContent) {
+    console.log(id, newContent);
 }
 
 function updateFollowers(followed, btn) {
