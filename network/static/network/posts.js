@@ -47,15 +47,15 @@ function getCookie(name) {
 }
 
 function loadPosts(pageNum=1) {
-    const postsDiv = document.getElementById('posts-div');
-    postsDiv.replaceChildren();
+    const postsList = document.getElementById('posts-list');
+    postsList.replaceChildren();
 
     fetch(`/posts${window.location.pathname}?page=${pageNum}`)
     .then(response => response.json())
     .then(page => {
         const posts = page.posts;
         for (let post of posts) {
-            postsDiv.append(makePost(post));
+            postsList.append(makePost(post));
         }
         paginate(pageNum, page.previous_page, page.next_page);
     });
@@ -82,21 +82,29 @@ function makePost(postJson) {
 }
 
 function paginate(pageNum, previousPage, nextPage) {
-    const prevBtn = document.getElementById("previous");
-    const nextBtn = document.getElementById("next");
+    const paginationDiv = document.getElementById('pagination');
+
+    const prevBtn = document.createElement('button');
+    prevBtn.setAttribute('id', 'previous');
+    prevBtn.innerHTML = 'Previous';
+    const nextBtn = document.createElement('button');
+    nextBtn.setAttribute('id', 'next');
+    nextBtn.innerHTML = 'Next';
+
+    paginationDiv.replaceChildren(prevBtn, nextBtn);
 
     if (previousPage) {
-        prevBtn.style.opacity = '1';
+        prevBtn.removeAttribute('disabled');
         prevBtn.addEventListener('click', () => loadPosts(pageNum-1));
     } else {
-        prevBtn.style.opacity = '0.5';
+        prevBtn.setAttribute('disabled', '');
     }
 
     if (nextPage) {
-        nextBtn.style.opacity = '1';
+        nextBtn.removeAttribute('disabled');
         nextBtn.addEventListener('click', () => loadPosts(pageNum+1));
     } else {
-        nextBtn.style.opacity = '0.5';
+        nextBtn.setAttribute('disabled', '');
     }
 }
 
