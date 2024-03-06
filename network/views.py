@@ -61,7 +61,37 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
+def post(request, post_id):
+    try:
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=400)
+    
+    data = json.loads(request.body)
+
+    if request.method == "POST":
+        if request.user != post.creator:
+            return JsonResponse({"error": "Invalid user."}, status=400)
+        if data.get("content"):
+            if data["content"] == post.content:
+                return JsonResponse({"error": "False edit."}, status=400)
+            post.content = data["content"]
+            post.edited = True
+            post.save()
+            return HttpResponse(status=204)
+        else:
+            return JsonResponse({"error": "Post cannot be empty"}, status=400)
+    elif request.method == "PUT":
+        ...
+        return HttpResponse(status=204)
+    else:
+        return JsonResponse({"error": "POST or PUT request required."}, status=400)
+
+
 def posts(request, username=""):
+
+    if request.method != "GET":
+        return JsonResponse({"error": "GET request required."}, status=400)
 
     # Filter posts based on username
     if not username:

@@ -29,6 +29,7 @@ function editPost(post) {
     });
 
     const saveBtn = document.createElement('button');
+    saveBtn.disabled = true;
     saveBtn.setAttribute('class', 'save-btn');
     saveBtn.innerHTML = 'Save';
     saveBtn.addEventListener('click', () => {
@@ -36,6 +37,14 @@ function editPost(post) {
         contentDiv.replaceChildren(editContent.value);
         editBtn.style.display = 'inline';
     });
+
+    editContent.addEventListener('input', () => {
+        if (editContent.value.length > 0  && editContent.value !== content) {
+            saveBtn.disabled = false;
+        } else {
+            saveBtn.disabled = true;
+        }
+    })
 
     contentDiv.replaceChildren(editContent, cancelBtn, saveBtn);
 }
@@ -132,22 +141,32 @@ function paginate(pageNum, previousPage, nextPage) {
     paginationDiv.replaceChildren(prevBtn, nextBtn);
 
     if (previousPage) {
-        prevBtn.removeAttribute('disabled');
+        prevBtn.disabled = false;
         prevBtn.addEventListener('click', () => loadPosts(pageNum-1));
     } else {
-        prevBtn.setAttribute('disabled', '');
+        prevBtn.disabled = true;
     }
 
     if (nextPage) {
-        nextBtn.removeAttribute('disabled');
+        nextBtn.disabled = false;
         nextBtn.addEventListener('click', () => loadPosts(pageNum+1));
     } else {
-        nextBtn.setAttribute('disabled', '');
+        nextBtn.disabled = true;
     }
 }
 
 function saveEdit(id, newContent) {
-    console.log(id, newContent);
+    const csrftoken = getCookie('csrftoken');
+
+    fetch(`/post/${id}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            content: newContent
+        }),
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    });
 }
 
 function updateFollowers(followed, btn) {
