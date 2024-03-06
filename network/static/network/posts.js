@@ -1,5 +1,6 @@
 const data = document.currentScript.dataset;
 const user = data.user;
+const csrftoken = getCookie('csrftoken');
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -36,13 +37,17 @@ function editPost(post) {
     saveBtn.setAttribute('class', 'save-btn');
     saveBtn.innerHTML = 'Save';
     saveBtn.addEventListener('click', () => {
-        saveEdit(post.id, editContent.value);
-        contentDiv.replaceChildren(editContent.value);
+        if (editContent.value.length > 0 && editContent.value !== content) {
+            saveEdit(post.id, editContent.value);
+            contentDiv.replaceChildren(editContent.value);
+        } else {
+            contentDiv.replaceChildren(content);
+        }
         editBtn.style.display = 'inline';
     });
 
     editContent.addEventListener('input', () => {
-        if (editContent.value.length > 0  && editContent.value !== content) {
+        if (editContent.value.length > 0 && editContent.value !== content) {
             saveBtn.disabled = false;
         } else {
             saveBtn.disabled = true;
@@ -53,9 +58,6 @@ function editPost(post) {
 }
 
 function followToggle(btn) {
-
-    const csrftoken = getCookie('csrftoken');
-
     let followed = btn.hasAttribute('followed');
 
     fetch(window.location.pathname, {
@@ -118,7 +120,17 @@ function makePost(postJson) {
     const timestamp = document.createElement('div');
     timestamp.innerHTML = postJson.timestamp;
 
-    post.append(creator, content, likes, timestamp);
+    const likeBtn = document.createElement('button');
+    if (postJson.liked_by.includes(user)) {
+        likeBtn.innerHTML = 'Unlike';
+        likeBtn.setAttribute('liked', '');
+    } else {
+        likeBtn.innerHTML = 'Like';
+        likeBtn.removeAttribute('liked');
+    }
+    likeBtn.addEventListener('click', () => toggleLike(postJson.id, likeBtn, likes));
+
+    post.append(creator, content, likes, timestamp, likeBtn);
 
     if (postJson.creator === user) {
         const editBtn = document.createElement('button');
@@ -159,8 +171,6 @@ function paginate(pageNum, previousPage, nextPage) {
 }
 
 function saveEdit(id, newContent) {
-    const csrftoken = getCookie('csrftoken');
-
     fetch(`/post/${id}`, {
         method: 'POST',
         body: JSON.stringify({
@@ -170,6 +180,39 @@ function saveEdit(id, newContent) {
             'X-CSRFToken': csrftoken
         }
     });
+}
+
+function toggleLike(id, likeBtn, likes) {
+    if (user !== 'AnonymousUser') {
+        const liked = likeBtn.hasAttribute('liked')
+
+        fetch(`/post/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                like: !liked
+            }),
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        })
+
+        let likeCount = parseInt(likes.innerHTML);
+
+        if (liked) {
+            likeBtn.innerHTML = 'Like';
+            likeBtn.removeAttribute('liked');
+            likeCount--;
+        } else {
+            likeBtn.innerHTML = 'Unlike';
+            likeBtn.setAttribute('liked', '');
+            likeCount++;
+        }
+
+        likes.innerHTML = likeCount;
+    } else {
+        window.location.replace(`/login`)
+    }
+
 }
 
 function updateFollowers(followed, btn) {

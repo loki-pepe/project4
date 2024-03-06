@@ -62,17 +62,20 @@ def logout_view(request):
 
 
 def post(request, post_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "User must be logged in"}, status=400)
+
     try:
         post = Post.objects.get(id=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=400)
-    
+
     data = json.loads(request.body)
 
     if request.method == "POST":
         if request.user != post.creator:
             return JsonResponse({"error": "Invalid user."}, status=400)
-        if data.get("content"):
+        if data.get("content") is not None:
             if data["content"] == post.content:
                 return JsonResponse({"error": "False edit."}, status=400)
             post.content = data["content"]
@@ -80,10 +83,14 @@ def post(request, post_id):
             post.save()
             return HttpResponse(status=204)
         else:
-            return JsonResponse({"error": "Post cannot be empty"}, status=400)
+            return JsonResponse({"error": "Invalid request."}, status=400)
     elif request.method == "PUT":
-        ...
-        return HttpResponse(status=204)
+        if data.get("like") is not None:
+            post.likes.add(request.user) if data["like"] else post.likes.remove(request.user)
+            post.save()
+            return HttpResponse(status=204)
+        else:
+            return JsonResponse({"error": "Invalid request."}, status=400)
     else:
         return JsonResponse({"error": "POST or PUT request required."}, status=400)
 
