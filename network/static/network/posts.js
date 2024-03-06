@@ -110,7 +110,7 @@ function makePost(postJson) {
     content.innerHTML = postJson.content;
 
     const likes = document.createElement('div');
-    likes.innerHTML = postJson.likes;
+    likes.innerHTML = postJson.likes_count;
 
     const timestamp = document.createElement('div');
     timestamp.innerHTML = postJson.timestamp;
