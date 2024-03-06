@@ -12,6 +12,7 @@ class Post(models.Model):
     content = models.CharField(blank=False, null=False, max_length=300)
     timestamp = models.DateTimeField(auto_now_add=True)
     likes = models.PositiveIntegerField(default=0)
+    edited = models.BooleanField(default=False, blank=False, null=False)
 
     class Meta:
         indexes = [
@@ -26,4 +27,5 @@ class Post(models.Model):
             "content": self.content,
             "timestamp": self.timestamp.strftime("%a %d %b %Y, %I:%M%p"),
             "likes": self.likes,
+            "edited": self.edited,
         }
