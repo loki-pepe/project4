@@ -128,15 +128,11 @@ def profile(request, username):
         return HttpResponseRedirect(reverse("index"))
 
     if request.method == "GET":
-        follower_count = profile_user.followers.all().count()
-        following_count = profile_user.following.all().count()
-        follow = profile_user.followers.filter(id=request.user.id).exists()
-
         return render(request, "network/profile.html", {
             "username": username, 
-            "follower_count": follower_count,
-            "following_count": following_count,
-            "follow": follow,
+            "follower_count": profile_user.follower_count(),
+            "following_count": profile_user.following_count(),
+            "follow": profile_user.followers.filter(id=request.user.id).exists(),
         })
 
     elif request.method == "PUT":

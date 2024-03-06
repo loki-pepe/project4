@@ -6,6 +6,13 @@ class User(AbstractUser):
     id = models.BigAutoField(primary_key=True)
     following = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="followers")
 
+    def following_count(self):
+        return self.following.all().count()
+
+    def follower_count(self):
+        return self.followers.all().count()
+
+
 class Post(models.Model):
     id = models.BigAutoField(primary_key=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
