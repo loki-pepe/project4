@@ -2,7 +2,7 @@ const data = document.currentScript.dataset;
 const user = data.user;
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log(user);
+
     if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
         loadPosts();
     }
