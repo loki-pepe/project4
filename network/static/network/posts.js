@@ -1,5 +1,8 @@
-document.addEventListener('DOMContentLoaded', () => {
+const data = document.currentScript.dataset;
+const user = data.user;
 
+document.addEventListener('DOMContentLoaded', () => {
+    console.log(user);
     if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
         loadPosts();
     }
@@ -117,7 +120,7 @@ function makePost(postJson) {
 
     post.append(creator, content, likes, timestamp);
 
-    if (postJson.creator === document.getElementById('username').innerHTML) {
+    if (postJson.creator === user) {
         const editBtn = document.createElement('button');
         editBtn.innerHTML = 'Edit';
         editBtn.setAttribute('class', 'edit-btn')
