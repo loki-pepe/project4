@@ -34,5 +34,6 @@ class Post(models.Model):
             "content": self.content,
             "timestamp": self.timestamp.strftime("%a %d %b %Y, %I:%M%p"),
             "likes_count": self.likes.all().count(),
+            "liked_by": [user.username for user in self.likes.all()],
             "edited": self.edited,
         }
